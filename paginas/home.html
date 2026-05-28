@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oficina</title>
+    <link rel="stylesheet" href="/estilos/homestyle.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+</head>
+<body>
+    <nav>
+        <ul>
+            <li class="logotipo">
+                <a href="">Oficina</a>
+            </li>
+            <li class="hideMobile">
+                <a href="#">Inicio</a>
+            </li>
+            <li class="hideMobile">
+                <a href="#sobre">Sobre</a>
+            </li>
+            <li class="hideMobile">
+                <a href="#agendamento">Agendamento</a>
+            </li>
+            <li class="hideMobile"><a href="login.html">Login</a>
+            </li>
+            <li class="hideDesktop" onclick="showSidebar()">
+                <a href="#">
+                    <span class="material-symbols-outlined">
+                        menu
+                    </span>
+
+                </a>
+
+            </li>
+
+        </ul>
+
+        <ul class="sidebar">
+            <li onclick="hideSidebar()">
+                <a href="#">
+                    <span class="material-symbols-outlined">
+                        close
+                    </span>
+                </a>
+            </li>
+            <li class="logotipo">
+                <a href="">Oficina</a>
+            </li>
+            <li><a href="#">Inicio</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#agendamento">Agendamento</a></li>
+            <li><a href="login.html">Login</a></li>
+
+        </ul>
+
+    </nav>
+
+    <div class="content">
+        <div class="intro">
+            <div class="icon">
+                <span class="material-symbols-outlined icone">
+                    precision_manufacturing
+                </span>
+            </div>
+            <div class="linha"></div>
+            <div class="texto">
+                <h1>Bem-vindo ao site da Oficina</h1>
+                <p>Aqui você encontrará informações sobre a nossa oficina e conseguirá realizar o agendamento dos nossos serviços.</p>
+                <br>
+                <h2>Serviços realizados</h2>
+                <p>
+                    Troca de óleo,
+                    troca de pneu,
+                    manutenção de motores.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <section id="sobre">
+        <div class="content">
+            <div class="intro">
+                <div class="icon">
+                    <span class="material-symbols-outlined icone-sobre">
+                        airport_shuttle
+                    </span>
+                </div>
+                <div class="linha"></div>
+                <div class="texto">
+                    <h1>Sobre a HrOficinas</h1>
+                    <p class="texto-sobre">Fundada em 2005, a HrOficinas nasceu com o objetivo de oferecer serviços mecânicos de qualidade e confiança. Ao longo dos anos, conquistamos reconhecimento pelo atendimento dedicado, equipe especializada e compromisso em entregar segurança e satisfação em cada serviço realizado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="agendamento">
+        <div class="content">
+            <div class="intro">
+                <div class="icon">
+                    <span class="material-symbols-outlined icone">
+                        calendar_month
+                    </span>
+                </div>
+                <div class="texto">
+                    <h1>Agende o seu atendimento conosco</h1>
+                    <br>
+                    <a href="agendamento.html" class="btn-primary">Agendar agora</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>
+            ✉ Email:
+            hroficinas@email.com
+        </p>
+        <p>
+            📞 Telefone:
+            (71) 94002-8922
+        </p>
+        <p>
+            📍 Salvador - BA
+        </p>
+    </footer>
+
+    <script>
+        function showSidebar() {
+            document.querySelector(".sidebar").style.display = "flex";
+        }
+
+        function hideSidebar() {
+            document.querySelector(".sidebar").style.display = "none";
+        }
+    </script>
+
+</body>
+</html>
