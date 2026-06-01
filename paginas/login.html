@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/estilos/loginstyle.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Login — HrOficinas</title>
+    <style>
+        .error-msg {
+            color: #f09595;
+            font-size: 12px;
+            margin-top: -20px;
+            margin-bottom: 10px;
+            padding-left: 8px;
+            display: none;
+        }
+        .error-msg.visible { display: block; }
+
+        .input-box input.invalid {
+            border-color: #E24B4A;
+        }
+
+        .toast-login {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            background: #A32D2D;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 11px 22px;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s, transform 0.25s;
+            pointer-events: none;
+            white-space: nowrap;
+            z-index: 100;
+        }
+        .toast-login.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h1>Login</h1>
+
+        <div class="input-box">
+            <input placeholder="E-mail" type="email" id="login-email">
+            <i class="bx bxs-user"></i>
+        </div>
+        <p class="error-msg" id="err-email">Informe um e-mail válido.</p>
+
+        <div class="input-box">
+            <input placeholder="Senha" type="password" id="login-senha">
+            <i class="bx bxs-lock-alt"></i>
+        </div>
+        <p class="error-msg" id="err-senha">Senha incorreta ou não cadastrada.</p>
+
+        <div class="remember-forgot">
+            <label>
+                <input type="checkbox" id="lembrar">
+                Lembrar-me
+            </label>
+            <a href="esqueciSenha.html">Esqueci a senha</a>
+        </div>
+
+        <button type="button" class="login" onclick="fazerLogin()">Entrar</button>
+
+        <div class="register-link">
+            <p>Não tem uma conta? <a href="registro.html">Cadastre-se</a></p>
+        </div>
+    </main>
+
+    <div class="toast-login" id="toast-login">
+        <i class="bx bx-error-circle"></i>
+        <span id="toast-msg">E-mail ou senha inválidos.</span>
+    </div>
+
+    <script>
+        // Se já estiver logado, redireciona
+        const jaLogado = sessionStorage.getItem('usuarioLogado') || localStorage.getItem('usuarioLogado');
+        if (jaLogado) {
+            const destino = sessionStorage.getItem('redirecionarPara') || 'home.html';
+            sessionStorage.removeItem('redirecionarPara');
+            window.location.href = destino;
+        }
+
+        function showToast(msg) {
+            const el = document.getElementById('toast-login');
+            document.getElementById('toast-msg').textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        function fazerLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const senha = document.getElementById('login-senha').value;
+            const lembrar = document.getElementById('lembrar').checked;
+
+            // Limpa erros
+            document.getElementById('err-email').classList.remove('visible');
+            document.getElementById('err-senha').classList.remove('visible');
+            document.getElementById('login-email').classList.remove('invalid');
+            document.getElementById('login-senha').classList.remove('invalid');
+
+            if (!email || !/\S+@\S+\.\S+/.test(email)) {
+                document.getElementById('err-email').classList.add('visible');
+                document.getElementById('login-email').classList.add('invalid');
+                return;
+            }
+
+            if (!senha || senha.length < 6) {
+                document.getElementById('err-senha').classList.add('visible');
+                document.getElementById('login-senha').classList.add('invalid');
+                return;
+            }
+
+            // Busca usuários cadastrados
+            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            const usuario = usuarios.find(u => u.email === email && u.senha === senha);
+
+            if (!usuario) {
+                showToast('E-mail ou senha inválidos.');
+                document.getElementById('login-email').classList.add('invalid');
+                document.getElementById('login-senha').classList.add('invalid');
+                return;
+            }
+
+            const dadosSession = JSON.stringify({ nome: usuario.nome, email: usuario.email });
+            if (lembrar) {
+                localStorage.setItem('usuarioLogado', dadosSession);
+            } else {
+                sessionStorage.setItem('usuarioLogado', dadosSession);
+            }
+
+            const destino = sessionStorage.getItem('redirecionarPara') || 'home.html';
+            sessionStorage.removeItem('redirecionarPara');
+            window.location.href = destino;
+        }
+
+        // Enter para logar
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') fazerLogin();
+        });
+    </script>
+</body>
+</html>
