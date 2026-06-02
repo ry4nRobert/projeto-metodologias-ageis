@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/estilos/loginstyle.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Recuperar Senha — HrOficinas</title>
+    <style>
+        .error-msg {
+            color: #f09595;
+            font-size: 12px;
+            margin-top: -20px;
+            margin-bottom: 10px;
+            padding-left: 8px;
+            display: none;
+        }
+        .error-msg.visible { display: block; }
+        .input-box input.invalid { border-color: #E24B4A; }
+
+        .container p.desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.65);
+            text-align: center;
+            margin: 8px 0 18px;
+            line-height: 1.5;
+        }
+
+        .voltar-link {
+            font-size: 14px;
+            text-align: center;
+            margin: 18px 0 0;
+        }
+        .voltar-link a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .voltar-link a:hover { text-decoration: underline; }
+
+        /* Tela de sucesso */
+        .sucesso-box {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .sucesso-box.visible { display: flex; }
+        .sucesso-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(59, 109, 17, 0.3);
+            border: 2px solid #3B6D11;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sucesso-icon i {
+            font-size: 30px;
+            color: #7BC24A;
+        }
+        .sucesso-box h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .sucesso-box p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.65);
+            line-height: 1.6;
+        }
+        .sucesso-box .email-destino {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Tela de nova senha */
+        .nova-senha-box {
+            display: none;
+        }
+        .nova-senha-box.visible { display: block; }
+
+        .senha-force {
+            display: flex;
+            gap: 4px;
+            margin-top: -18px;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+        .bar {
+            flex: 1;
+            height: 3px;
+            border-radius: 4px;
+            background: #333;
+            transition: background 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+
+        <!-- Etapa 1: Solicitar e-mail -->
+        <div id="etapa-email">
+            <h1>Recuperar Senha</h1>
+            <p class="desc">Informe seu e-mail cadastrado e enviaremos as instruções para redefinir sua senha.</p>
+
+            <div class="input-box">
+                <input placeholder="Seu e-mail" type="email" id="rec-email">
+                <i class="bx bxs-envelope"></i>
+            </div>
+            <p class="error-msg" id="err-rec-email">Informe um e-mail válido.</p>
+
+            <button type="button" class="login" onclick="solicitarRecuperacao()">Enviar instruções</button>
+
+            <div class="voltar-link">
+                <a href="login.html"><i class="bx bx-arrow-back"></i> Voltar ao login</a>
+            </div>
+        </div>
+
+        <!-- Etapa 2: Confirmação de envio -->
+        <div id="etapa-sucesso" class="sucesso-box">
+            <div class="sucesso-icon">
+                <i class="bx bx-envelope"></i>
+            </div>
+            <h2>E-mail enviado!</h2>
+            <p>Enviamos as instruções para <span class="email-destino" id="email-mostrado"></span>.<br>Verifique sua caixa de entrada (e o spam).</p>
+            <button type="button" class="login" onclick="mostrarNovaSenha()" style="margin-top:8px;">
+                Redefinir senha agora
+            </button>
+            <div class="voltar-link" style="margin-top:8px;">
+                <a href="login.html"><i class="bx bx-arrow-back"></i> Voltar ao login</a>
+            </div>
+        </div>
+
+        <!-- Etapa 3: Nova senha -->
+        <div id="etapa-nova-senha" class="nova-senha-box">
+            <h1>Nova Senha</h1>
+            <p class="desc">Crie uma nova senha para sua conta.</p>
+
+            <div class="input-box">
+                <input placeholder="Nova senha" type="password" id="nova-senha">
+                <i class="bx bxs-lock-alt"></i>
+            </div>
+            <div class="senha-force">
+                <div class="bar" id="bar1"></div>
+                <div class="bar" id="bar2"></div>
+                <div class="bar" id="bar3"></div>
+            </div>
+            <p class="error-msg" id="err-nova-senha">Senha deve ter no mínimo 6 caracteres.</p>
+
+            <div class="input-box">
+                <input placeholder="Confirmar nova senha" type="password" id="confirma-nova-senha">
+                <i class="bx bxs-lock"></i>
+            </div>
+            <p class="error-msg" id="err-confirma-nova">As senhas não coincidem.</p>
+
+            <button type="button" class="login" onclick="redefinirSenha()">Salvar nova senha</button>
+        </div>
+
+    </main>
+
+    <script>
+        let emailRecuperacao = '';
+
+        document.getElementById('nova-senha').addEventListener('input', function () {
+            const v = this.value;
+            const force = (v.length >= 6 ? 1 : 0) + (/[A-Z]/.test(v) || /\d/.test(v) ? 1 : 0) + (/[^A-Za-z0-9]/.test(v) ? 1 : 0);
+            const colors = ['#A32D2D', '#E28B4A', '#3B6D11'];
+            ['bar1','bar2','bar3'].forEach((id, i) => {
+                document.getElementById(id).style.background = i < force ? colors[force-1] : '#333';
+            });
+        });
+
+        function solicitarRecuperacao() {
+            const emailInput = document.getElementById('rec-email');
+            const email = emailInput.value.trim();
+            const errEl = document.getElementById('err-rec-email');
+
+            errEl.classList.remove('visible');
+            emailInput.classList.remove('invalid');
+
+            if (!email || !/\S+@\S+\.\S+/.test(email)) {
+                errEl.classList.add('visible');
+                emailInput.classList.add('invalid');
+                return;
+            }
+
+            // Verifica se e-mail existe
+            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            const existe = usuarios.find(u => u.email === email);
+
+            if (!existe) {
+                errEl.textContent = 'E-mail não encontrado em nossa base.';
+                errEl.classList.add('visible');
+                emailInput.classList.add('invalid');
+                return;
+            }
+
+            emailRecuperacao = email;
+            document.getElementById('email-mostrado').textContent = email;
+
+            document.getElementById('etapa-email').style.display = 'none';
+            document.getElementById('etapa-sucesso').classList.add('visible');
+        }
+
+        function mostrarNovaSenha() {
+            document.getElementById('etapa-sucesso').classList.remove('visible');
+            document.getElementById('etapa-nova-senha').classList.add('visible');
+        }
+
+        function redefinirSenha() {
+            const nova = document.getElementById('nova-senha').value;
+            const confirma = document.getElementById('confirma-nova-senha').value;
+            let valido = true;
+
+            document.getElementById('err-nova-senha').classList.remove('visible');
+            document.getElementById('err-confirma-nova').classList.remove('visible');
+            document.getElementById('nova-senha').classList.remove('invalid');
+            document.getElementById('confirma-nova-senha').classList.remove('invalid');
+
+            if (!nova || nova.length < 6) {
+                document.getElementById('err-nova-senha').classList.add('visible');
+                document.getElementById('nova-senha').classList.add('invalid');
+                valido = false;
+            }
+            if (nova !== confirma) {
+                document.getElementById('err-confirma-nova').classList.add('visible');
+                document.getElementById('confirma-nova-senha').classList.add('invalid');
+                valido = false;
+            }
+            if (!valido) return;
+
+            // Atualiza senha no localStorage
+            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            const idx = usuarios.findIndex(u => u.email === emailRecuperacao);
+            if (idx !== -1) {
+                usuarios[idx].senha = nova;
+                localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            }
+
+            // Redireciona para login com mensagem
+            sessionStorage.setItem('senhaRedefinida', '1');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
