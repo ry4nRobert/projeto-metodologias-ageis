@@ -87,7 +87,7 @@
         // Se já estiver logado, redireciona
         const jaLogado = sessionStorage.getItem('usuarioLogado') || localStorage.getItem('usuarioLogado');
         if (jaLogado) {
-            const destino = sessionStorage.getItem('redirecionarPara') || 'home.html';
+            const destino = sessionStorage.getItem('redirecionarPara') || 'index.html';
             sessionStorage.removeItem('redirecionarPara');
             window.location.href = destino;
         }
@@ -140,7 +140,7 @@
                 sessionStorage.setItem('usuarioLogado', dadosSession);
             }
 
-            const destino = sessionStorage.getItem('redirecionarPara') || 'home.html';
+            const destino = sessionStorage.getItem('redirecionarPara') || 'index.html';
             sessionStorage.removeItem('redirecionarPara');
             window.location.href = destino;
         }
